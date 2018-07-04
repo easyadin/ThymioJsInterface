@@ -1,5 +1,6 @@
 const path = require('path');
 const webpack = require('webpack');
+var babelenv = require('babel-preset-env');
 
 const browserConfig = {
     entry : [
@@ -26,7 +27,7 @@ const browserConfig = {
                 options: {
                     presets: [
                         [
-                            'env', {
+                            babelenv , {
                                 "targets": {
                                     "browsers": ["> 3%", "ie >= 10"]
                                 }
