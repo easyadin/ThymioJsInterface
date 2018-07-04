@@ -1,8 +1,6 @@
 const path = require('path');
 const webpack = require('webpack');
 
-var nodeExternals = require('webpack-node-externals');
-
 const browserConfig = {
     entry : [
         'babel-polyfill',
@@ -12,6 +10,7 @@ const browserConfig = {
         filename: 'thymio.js',
         path: __dirname + "/dist/",
     },
+    mode: "development",
     devtool: 'sourcemap',
     devServer: {
         hot : true,
@@ -21,19 +20,23 @@ const browserConfig = {
     module: {
         rules: [
             {
-                test:  /\/src\/.*\.js$/,
+                test:  /\.*\.js$/,
                 loader: 'babel-loader',
+                exclude: /(node_modules\/babel-polyfill)/,
                 options: {
-                    presets: ['env']
-                },
-                exclude: /node_modules/
+                    presets: [
+                        [
+                            'env', {
+                                "targets": {
+                                    "browsers": ["> 3%", "ie >= 10"]
+                                }
+                            }
+                        ]
+                    ]
+                }
             }
         ]
-    },
-    plugins: [
-        new webpack.HotModuleReplacementPlugin(),
-        new webpack.NoEmitOnErrorsPlugin()
-    ]
+    }
 };
 
 

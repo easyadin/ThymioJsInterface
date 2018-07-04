@@ -8,15 +8,16 @@ let selectedNode = undefined
 // Start monitotring for node event
 // A node will have the state
 //      * connected    : Connected but vm description unavailable - little can be done in this state
-//      * ready        : The node is ready, we can start communicating with it
-//      * busy         : The node is locked by someone else. NB : we will receive busy event for nodes we have a lock on
+//      * available    : The node is available, we can start communicating with it
+//      * ready        : We have an excusive lock on the node and can start sending code to it.
+//      * busy         : The node is locked by someone else.
 //      * disconnected : The node is gone
 client.on_nodes_changed = async (nodes) => {
     //Iterate over the nodes
     for (let node of nodes) {
         console.log(`${node.id} : ${node.status_str}`)
         // Select the first non busy node
-        if((!selectedNode || selectedNode.disconnected) && node.status == Node.Status.ready) {
+        if((!selectedNode || !selectedNode.ready) && node.status == Node.Status.available) {
             selectedNode = node
             try {
                 console.log(`Locking ${node.id}`)
