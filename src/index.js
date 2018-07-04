@@ -1,4 +1,4 @@
-import {Client,Node} from '@mobsya/thymio-api'
+import {Client,Node,Request} from '@mobsya/thymio-api'
 
 //Connect to the switch
 //We will need some way to get that url, via the launcher
