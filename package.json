@@ -1,0 +1,36 @@
+{
+  "name": "thymio-js-api-demo",
+  "version": "0.0.1",
+  "description": "Thymio JS API demo for Node & Browsers",
+  "main": "webpack.config.js",
+  "dependencies": {
+    "@mobsya/thymio-api": "^0.1.7",
+    "babel-preset-env": "^1.7.0"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-loader": "^7.1.4",
+    "babel-polyfill": "^6.26.0",
+    "webpack": "^4.14.0",
+    "webpack-cli": "^3.0.8"
+  },
+  "scripts": {
+    "browser": "npm run build && echo \"Open dist/index.html with a web browser.\",
+    "start": "npm run build && node --experimental-modules dist/thymio-node.js",
+    "build": "webpack"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Mobsya/thymio-js-api-demo.git"
+  },
+  "keywords": [
+    "thymio",
+    "demo"
+  ],
+  "author": "Mobsya",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/Mobsya/thymio-js-api-demo/issues"
+  },
+  "homepage": "https://github.com/Mobsya/thymio-js-api-demo#readme"
+}
