@@ -1,6 +1,6 @@
 # thymio-js-api-demo
 
-This simple javascript showcases how to use the Thymio API from a browser
+This simple javascript application showcases how to use the Thymio API from a browser or a node-based app
 
 
 ## Getting started
