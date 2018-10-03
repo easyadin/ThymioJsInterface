@@ -7,6 +7,9 @@ const browserConfig = {
         'babel-polyfill',
         './src/index.js'
     ],
+    node: {
+        fs: "empty"
+    },
     output: {
         filename: 'thymio.js',
         path: __dirname + "/dist/",
@@ -65,7 +68,10 @@ const nodeConfig = {
                 exclude: /node_modules/
             }
         ]
-    }
+    },
+    node: {
+        fs: 'empty'
+    },
 };
 
 module.exports = [ browserConfig , nodeConfig];

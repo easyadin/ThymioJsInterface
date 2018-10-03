@@ -35,6 +35,11 @@ client.on_nodes_changed = async (nodes) => {
                     return new Promise(resolve => setTimeout(resolve, ms));
                 }
 
+                selectedNode.on_vars_changed = (vars) => {
+                    console.log(vars)
+                    //selectedNode.on_vars_changed = null
+                }
+
                 while(true) {
                     // Load some aseba code on the device
                     // The code will be compiled on the switch
@@ -51,6 +56,7 @@ client.on_nodes_changed = async (nodes) => {
                     console.time('Running code');
                     await selectedNode.run_aseba_program()
                     console.timeEnd('Running code');
+                    await sleep(1000)
                 }
 
             } catch(err) {
