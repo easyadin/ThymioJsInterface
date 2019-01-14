@@ -1,9 +1,14 @@
-import {Client,Node,Request} from '@mobsya/thymio-api'
+import {Client,Node,Request, setup} from '@mobsya/thymio-api'
 
 //Connect to the switch
 //We will need some way to get that url, via the launcher
 let client = new Client("ws://localhost:8597");
 let selectedNode = undefined
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 
 // Start monitotring for node event
 // A node will have the state
@@ -12,64 +17,82 @@ let selectedNode = undefined
 //      * ready        : We have an excusive lock on the node and can start sending code to it.
 //      * busy         : The node is locked by someone else.
 //      * disconnected : The node is gone
-client.on_nodes_changed = async (nodes) => {
+client.onNodesChanged = async (nodes) => {
     //Iterate over the nodes
     for (let node of nodes) {
-        console.log(`${node.id} : ${node.status_str}`)
-        // Select the first non busy node
-        if((!selectedNode || !selectedNode.ready) && node.status == Node.Status.available) {
-            selectedNode = node
+        console.log(`${node.id} : ${node.statusAsString}`)
+          // Select the first non busy node
+        if((!selectedNode || selectedNode.status != Node.Status.ready) && node.status == Node.Status.available) {
             try {
                 console.log(`Locking ${node.id}`)
                 // Lock (take ownership) of the node. We cannot mutate a node (send code to it), until we have a lock on it
                 // Once locked, a node will appear busy / unavailable to other clients until we close the connection or call `unlock` explicitely
                 // We can lock as many nodes as we want
-                await selectedNode.lock();
-                console.log("Node locked, sending code")
+                await node.lock();
+                selectedNode = node
+                console.log("Node locked")
+            } catch(e) {
+                console.log(`Unable To Log ${node.id} (${node.name})`)
+            }
+        }
+        if(!selectedNode)
+            continue
+        try {
 
-                let colgen = () => {
-                    return Math.floor(Math.random() * (32 - 1)) + 0
-                }
+            //This is requiered in order to receive the variables and node of a group
+            node.watchSharedVariablesAndEvents(true)
 
-                function sleep(ms) {
-                    return new Promise(resolve => setTimeout(resolve, ms));
-                }
+            //Monitor the shared variables - note that because this callback is set on a group
+            //It does not track group changes
+            node.group.onVariablesChanged = (vars) => {
+                console.log("shared variables : ", vars)
+            }
 
-                selectedNode.on_vars_changed = (vars) => {
-                    console.log(vars)
-                    //selectedNode.on_vars_changed = null
-                }
+            //Monitor the event descriptions - note that because this callback is set on a group, it does not track group changes
+            node.group.onEventsDescriptionsChanged = (events) => {
+                console.log("descriptions", events)
+            }
 
-                while(true) {
-                    // Load some aseba code on the device
-                    // The code will be compiled on the switch
-                    console.time('Sending code');
-                    await selectedNode.send_aseba_program(
-                        `call leds.bottom.left(${colgen()},${colgen()},${colgen()})
-                         call leds.bottom.right(${colgen()},${colgen()},${colgen()})
-                         call leds.top(${colgen()}, ${colgen()}, ${colgen()})
-                        `
-                    )
-                    console.timeEnd('Sending code');
+            //Monitor variable changes
+            node.onVariablesChanged = (vars) => {
+                console.log(vars)
+            }
 
-                    // Execute whatever code is loaded on the device
-                    console.time('Running code');
-                    await selectedNode.run_aseba_program()
-                    console.timeEnd('Running code');
+            //Monitor events
+            node.onEvents = async (events) => {
+                console.log("events", events)
+                let { pong: pong } = events;
+                if(pong) {
                     await sleep(1000)
-                }
-
-            } catch(err) {
-                console.log(err)
-                switch(err) {
-                    case Request.ErrorType.node_busy:
-                        console.log("Node Busy !")
-                        break
-                    default:
-                        console.log("unknown error")
+                    await node.emitEvents({"ping": null})
                 }
             }
-            break;
+
+            await node.group.setEventsDescriptions([
+                {name : "ping", fixed_size : 0}, {name : "pong", fixed_size : 1},
+            ])
+
+            await node.sendAsebaProgram(`
+                var rgb[3]
+                var tmp[3]
+                var i = 0
+                onevent ping
+                    call math.rand(rgb)
+                    for i in 0:2 do
+                        rgb[i] = abs rgb[i]
+                        rgb[i] = rgb[i] % 20
+                    end
+                    call leds.top(rgb[0], rgb[1], rgb[2])
+                    i++
+                    emit pong i
+
+            `)
+            await node.runProgram()
+            await node.emitEvents("ping")
+        }
+        catch(e) {
+            console.log(e)
+            process.exit()
         }
     }
 }

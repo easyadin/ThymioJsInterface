@@ -5,7 +5,8 @@
   "main": "webpack.config.js",
   "dependencies": {
     "@mobsya/thymio-api": "^0.2.1",
-    "babel-preset-env": "^1.7.0"
+    "babel-preset-env": "^1.7.0",
+    "lodash": "^4.17.11"
   },
   "devDependencies": {
     "babel-core": "^6.26.3",
@@ -22,7 +23,7 @@
   },
   "scripts": {
     "browser": "npm run build && echo \"Open dist/index.html with a web browser.\"",
-    "start": "npm run build && node --experimental-modules dist/thymio-node.js",
+    "start": "npm run build && node --experimental-modules --expose-wasm dist/thymio-node.js",
     "build": "webpack"
   },
   "repository": {
