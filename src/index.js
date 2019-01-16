@@ -1,4 +1,4 @@
-import {Client,Node,Request, setup} from '@mobsya/thymio-api'
+import {Client, Node, NodeStatus, Request, setup} from '@mobsya/thymio-api'
 
 //Connect to the switch
 //We will need some way to get that url, via the launcher
@@ -18,11 +18,12 @@ function sleep(ms) {
 //      * busy         : The node is locked by someone else.
 //      * disconnected : The node is gone
 client.onNodesChanged = async (nodes) => {
+    try {
     //Iterate over the nodes
     for (let node of nodes) {
         console.log(`${node.id} : ${node.statusAsString}`)
           // Select the first non busy node
-        if((!selectedNode || selectedNode.status != Node.Status.ready) && node.status == Node.Status.available) {
+        if((!selectedNode || selectedNode.status != NodeStatus.ready) && node.status == NodeStatus.available) {
             try {
                 console.log(`Locking ${node.id}`)
                 // Lock (take ownership) of the node. We cannot mutate a node (send code to it), until we have a lock on it
@@ -95,4 +96,8 @@ client.onNodesChanged = async (nodes) => {
             process.exit()
         }
     }
+}catch(e) {
+    console.log(e)
+    process.exit()
+}
 }

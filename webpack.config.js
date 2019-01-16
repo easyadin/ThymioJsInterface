@@ -1,6 +1,6 @@
 const path = require('path');
 const webpack = require('webpack');
-var babelenv = require('babel-preset-env');
+var babelenv = require('@babel/preset-env');
 
 const browserConfig = {
     entry : [
@@ -23,6 +23,10 @@ const browserConfig = {
     },
     module: {
         rules: [
+            {
+                test:  /\.*\.ts$/,
+                loader: 'ts-loader'
+            },
             {
                 test:  /\.*\.js$/,
                 loader: 'babel-loader',
@@ -62,7 +66,7 @@ const nodeConfig = {
                 loader: 'babel-loader',
                 options: {
                     "presets": [
-                        ["env", { "targets": { "node": "current" } } ]
+                        [babelenv, { "targets": { "node": "current" } } ]
                     ]
                 },
                 exclude: /node_modules/
