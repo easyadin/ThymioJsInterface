@@ -1,6 +1,8 @@
 const path = require('path');
 const webpack = require('webpack');
 var babelenv = require('@babel/preset-env');
+const HtmlWebPackPlugin = require("html-webpack-plugin");
+var HtmlWebpackExcludeAssetsPlugin = require('html-webpack-exclude-assets-plugin');
 
 const browserConfig = {
     entry : [
@@ -42,9 +44,33 @@ const browserConfig = {
                         ]
                     ]
                 }
-            }
+            },
+            {
+                test:/\.html$/,
+                use:[
+                    {
+                        loader:"html-loader",
+                        options:{minimize:true}
+                    }
+                ]
+            }, {
+                test: /\.css$/i,
+                use: ['style-loader', 'css-loader'],
+              },
         ]
-    }
+    },
+    plugins:[
+        new HtmlWebPackPlugin({
+            template:"./src/index.html",
+            filename:"./index.html"
+        }),
+        new HtmlWebPackPlugin({
+            template:"./src/ThymioNodeConfig.html",
+            filename:"./ThymioNodeConfig.html",
+            excludeChunks:['js'],
+            inject:false
+        }),
+    ]
 };
 
 
