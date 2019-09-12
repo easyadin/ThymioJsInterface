@@ -37273,6 +37273,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
 var client = Object(_mobsya_thymio_api__WEBPACK_IMPORTED_MODULE_0__["createClient"])("ws://localhost:8597");
 var selectedNode = undefined;
+var foundNodes = []; // array to hold all locked nodes
 
 function sleep(ms) {
   return new Promise(function (resolve) {
@@ -37284,13 +37285,14 @@ function sleep(ms) {
 
 
 var NumberOfNodesFound = 0;
+var robotName = undefined;
 var aeslProgram = "\ncall leds.top(30,0,0)  \n                            "; // Start monitotring for node event
 // A node will have the state
-//      * connected    : Connected but vm description unavailable - little can be done in this state
-//      * available    : The node is available, we can start communicating with it
-//      * ready        : We have an excusive lock on the node and can start sending code to it.
-//      * busy         : The node is locked by someone else.
-//      * disconnected : The node is gone
+//     1 * connected    : Connected but vm description unavailable - little can be done in this state
+//     2 * available    : The node is available, we can start communicating with it
+//     4 * ready        : We have an exclusive lock on the node and can start sending code to it.
+//     3 * busy         : The node is locked by someone else.
+//     5 * disconnected : The node is gone
 
 client.onNodesChanged =
 /*#__PURE__*/
@@ -37298,109 +37300,121 @@ function () {
   var _ref = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee(nodes) {
-    var _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, node, thymioId, parentList;
+    var _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, node, _i, _foundNodes, _node;
 
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
-            //iterate over nodes to find the currently available and but not currently 
-            //selected node
+            //iterate over nodes to find the currently available and but not currently selected node
             _iteratorNormalCompletion = true;
             _didIteratorError = false;
             _iteratorError = undefined;
             _context.prev = 3;
-            _iterator = nodes[Symbol.iterator]();
 
-          case 5:
-            if (_iteratorNormalCompletion = (_step = _iterator.next()).done) {
-              _context.next = 27;
-              break;
-            }
+            for (_iterator = nodes[Symbol.iterator](); !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+              node = _step.value;
 
-            node = _step.value;
+              if (node.status == _mobsya_thymio_api__WEBPACK_IMPORTED_MODULE_0__["NodeStatus"].available) {
+                //save to array
+                foundNodes.push(node);
+              }
+            } //iterate through 
 
-            if (!((!selectedNode || selectedNode.status != _mobsya_thymio_api__WEBPACK_IMPORTED_MODULE_0__["NodeStatus"].ready) && node.status == _mobsya_thymio_api__WEBPACK_IMPORTED_MODULE_0__["NodeStatus"].available)) {
-              _context.next = 17;
-              break;
-            }
 
-            console.log("Locking ".concat(node.id));
             _context.next = 11;
-            return node.lock();
-
-          case 11:
-            selectedNode = node; //generate html element for node locked
-
-            thymioId = document.createElement("h1");
-            parentList = document.getElementById("getThymioID");
-            thymioId.innerText = selectedNode.id;
-            parentList.appendChild(thymioId);
-            console.log("Node locked");
-
-          case 17:
-            if (selectedNode) {
-              _context.next = 19;
-              break;
-            }
-
-            return _context.abrupt("continue", 24);
-
-          case 19:
-            //This is requiered in order to receive the variables and node of a group
-            node.watchSharedVariablesAndEvents(true);
-            _context.next = 22;
-            return node.sendAsebaProgram(aeslProgram);
-
-          case 22:
-            _context.next = 24;
-            return node.runProgram();
-
-          case 24:
-            _iteratorNormalCompletion = true;
-            _context.next = 5;
             break;
 
-          case 27:
-            _context.next = 33;
-            break;
-
-          case 29:
-            _context.prev = 29;
+          case 7:
+            _context.prev = 7;
             _context.t0 = _context["catch"](3);
             _didIteratorError = true;
             _iteratorError = _context.t0;
 
-          case 33:
-            _context.prev = 33;
-            _context.prev = 34;
+          case 11:
+            _context.prev = 11;
+            _context.prev = 12;
 
             if (!_iteratorNormalCompletion && _iterator.return != null) {
               _iterator.return();
             }
 
-          case 36:
-            _context.prev = 36;
+          case 14:
+            _context.prev = 14;
 
             if (!_didIteratorError) {
-              _context.next = 39;
+              _context.next = 17;
               break;
             }
 
             throw _iteratorError;
 
-          case 39:
-            return _context.finish(36);
+          case 17:
+            return _context.finish(14);
 
-          case 40:
-            return _context.finish(33);
+          case 18:
+            return _context.finish(11);
 
-          case 41:
+          case 19:
+            foundNodes.forEach(function (node) {
+              // bind available nodes to html
+              var ThymioList = document.getElementById("thymioList");
+              var ThymioItem = document.createElement("li");
+              ThymioItem.innerHTML = "ID ".concat(node._name, " STATUS ").concat(node._status);
+
+              ThymioItem.onclick = function (name) {
+                console.log(node._name);
+                robotName = node._name;
+              }; // bind node to parent div
+
+
+              ThymioList.appendChild(ThymioItem);
+              NumberOfNodesFound++; // number of available robots
+              //bind number of thymio to html count
+
+              document.getElementById("ThymioCounter").innerText = NumberOfNodesFound;
+            }); //now lets try to send data to robot with "b0242d53-b23c-4e69-ad6e-7eb77b6ac315"
+            //NOTE: sending data to a node requires that a node is locked which will set its status to ready 
+            //now lets try to lock node only when we selects its id
+
+            _i = 0, _foundNodes = foundNodes;
+
+          case 21:
+            if (!(_i < _foundNodes.length)) {
+              _context.next = 34;
+              break;
+            }
+
+            _node = _foundNodes[_i];
+
+            if (!(_node._name == robotName)) {
+              _context.next = 31;
+              break;
+            }
+
+            _context.next = 26;
+            return _node.lock();
+
+          case 26:
+            console.log("".concat(_node._name, " is locked"));
+            _context.next = 29;
+            return _node.sendAsebaProgram(aeslProgram);
+
+          case 29:
+            _context.next = 31;
+            return _node.runProgram();
+
+          case 31:
+            _i++;
+            _context.next = 21;
+            break;
+
+          case 34:
           case "end":
             return _context.stop();
         }
       }
-    }, _callee, null, [[3, 29, 33, 41], [34,, 36, 40]]);
+    }, _callee, null, [[3, 7, 11, 19], [12,, 14, 18]]);
   }));
 
   return function (_x) {

@@ -4,7 +4,7 @@ import {createClient, Node, NodeStatus, Request, setup} from '@mobsya/thymio-api
 //We will need some way to get that url, via the launcher
 let client = createClient("ws://localhost:8597");
 let selectedNode = undefined
-let lockedNodes = []; // array to hold all locked nodes
+let foundNodes = []; // array to hold all locked nodes
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -13,7 +13,7 @@ function sleep(ms) {
 //Just refresh and it will adjust 
 let NumberOfNodesFound = 0;
 
-let robotName = "thymio2 A on DESKTOP-OMM87U3 - 20832";
+var robotName = "thymio2 D on DESKTOP-OMM87U3 - 16928";
 
 const aeslProgram = `
 call leds.top(30,0,0)  
@@ -31,20 +31,18 @@ client.onNodesChanged = async (nodes) => {
         for(let node of nodes){
             if(node.status == NodeStatus.available) {
                 //save to array
-                lockedNodes.push(node);
-                //we can view available nodes in console
-               // console.log(node._name +" with status : " + node._status)
+                foundNodes.push(node);
             }
         }
-        //view content on lockedNodes array
-        console.log(lockedNodes)
-        lockedNodes.forEach(function (node){
+        //iterate through 
+        foundNodes.forEach(function (node){
         // bind available nodes to html
         var ThymioList = document.getElementById("thymioList");
         var ThymioItem = document.createElement("li");
         ThymioItem.innerHTML = `ID ${node._name} STATUS ${node._status}`;
-        ThymioItem.onclick = function(){
-            console.log(node._name);
+        ThymioItem.onclick = function(name){
+            console.log(node._name)
+            robotName = node._name
         }
         // bind node to parent div
         ThymioList.appendChild(ThymioItem);
@@ -57,7 +55,9 @@ client.onNodesChanged = async (nodes) => {
          //now lets try to send data to robot with "b0242d53-b23c-4e69-ad6e-7eb77b6ac315"
          //NOTE: sending data to a node requires that a node is locked which will set its status to ready 
          //now lets try to lock node only when we selects its id
-         for(let node of lockedNodes){
+         
+
+         for(let node of foundNodes){
             if(node._name == robotName){
                 //lock this particular node
                 await node.lock();
