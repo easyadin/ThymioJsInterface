@@ -2,7 +2,11 @@ import {createClient, Node, NodeStatus, Request, setup} from '@mobsya/thymio-api
 
 //Connect to the switch
 //We will need some way to get that url, via the launcher
-let client = createClient("ws://localhost:8597");
+const port = process.env.PORT;
+let client = createClient(port);
+
+
+
 let selectedNode = undefined
 let foundNodes = []; // array to hold all locked nodes
 function sleep(ms) {
