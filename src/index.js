@@ -2,16 +2,14 @@ import {createClient, Node, NodeStatus, Request, setup} from '@mobsya/thymio-api
 
 //Connect to the switch
 //We will need some way to get that url, via the launcher
-const port = process.env.PORT;
+const port = process.env.PORT || "ws://localhost:8597"
 let client = createClient(port);
 
 
 
 let selectedNode = undefined;
 let foundNodes = []; // array to hold all locked nodes
-function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
+
 // we need a way to count number of nodes 
 //Note: Subsequent refresh may be required to be sure the number of nodes displayed corresponds with the real robots
 //Just refresh and it will adjust 
