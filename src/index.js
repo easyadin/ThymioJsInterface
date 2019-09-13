@@ -7,7 +7,7 @@ let client = createClient(port);
 
 
 
-let selectedNode = undefined
+let selectedNode = undefined;
 let foundNodes = []; // array to hold all locked nodes
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
