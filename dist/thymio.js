@@ -37489,19 +37489,13 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
  //Connect to the switch
 //We will need some way to get that url, via the launcher
 
-var port = process.env.PORT;
+var port = process.env.PORT || "ws://localhost:8597";
 var client = Object(_mobsya_thymio_api__WEBPACK_IMPORTED_MODULE_0__["createClient"])(port);
 var selectedNode = undefined;
 var foundNodes = []; // array to hold all locked nodes
-
-function sleep(ms) {
-  return new Promise(function (resolve) {
-    return setTimeout(resolve, ms);
-  });
-} // we need a way to count number of nodes 
+// we need a way to count number of nodes 
 //Note: Subsequent refresh may be required to be sure the number of nodes displayed corresponds with the real robots
 //Just refresh and it will adjust 
-
 
 var NumberOfNodesFound = 0;
 var robotName = "thymio2 D on DESKTOP-OMM87U3 - 16928";
