@@ -37472,25 +37472,6 @@ module.exports = function (module) {
 
 /***/ }),
 
-/***/ "./src sync recursive":
-/*!******************!*\
-  !*** ./src sync ***!
-  \******************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-function webpackEmptyContext(req) {
-	var e = new Error("Cannot find module '" + req + "'");
-	e.code = 'MODULE_NOT_FOUND';
-	throw e;
-}
-webpackEmptyContext.keys = function() { return []; };
-webpackEmptyContext.resolve = webpackEmptyContext;
-module.exports = webpackEmptyContext;
-webpackEmptyContext.id = "./src sync recursive";
-
-/***/ }),
-
 /***/ "./src/index.js":
 /*!**********************!*\
   !*** ./src/index.js ***!
@@ -37505,11 +37486,8 @@ function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
-
-
-__webpack_require__("./src sync recursive")(favicon.ico); //Connect to the switch
+ //Connect to the switch
 //We will need some way to get that url, via the launcher
-
 
 var port = process.env.PORT || "ws://localhost:8597";
 var client = Object(_mobsya_thymio_api__WEBPACK_IMPORTED_MODULE_0__["createClient"])(port);

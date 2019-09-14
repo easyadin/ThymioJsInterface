@@ -32,7 +32,7 @@
   "scripts": {
     "browser": "npm run build && echo \"Open dist/index.html with a web browser.\"",
     "build": "webpack",
-    "start": "webpack-dev-server"
+    "start": "webpack-dev-server --port $PORT --host 0.0.0.0 --config build/webpack.prod.conf.js"
   },
   "repository": {
     "type": "git",
