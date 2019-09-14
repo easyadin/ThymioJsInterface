@@ -1,5 +1,8 @@
 import {createClient, Node, NodeStatus, Request, setup} from '@mobsya/thymio-api'
 
+
+
+
 //Connect to the switch
 //We will need some way to get that url, via the launcher
 const port = process.env.PORT || "ws://localhost:8597"

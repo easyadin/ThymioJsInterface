@@ -5,6 +5,7 @@
   "main": "webpack.config.js",
   "dependencies": {
     "@babel/polyfill": "^7.4.4",
+    "cors": "^2.8.5",
     "webpack": "^4.33.0"
   },
   "devDependencies": {
@@ -30,9 +31,8 @@
   },
   "scripts": {
     "browser": "npm run build && echo \"Open dist/index.html with a web browser.\"",
-    "start": "npm run build && node --experimental-modules --expose-wasm dist/thymio-node.js",
     "build": "webpack",
-    "start:dev": "webpack-dev-server"
+    "start": "webpack-dev-server"
   },
   "repository": {
     "type": "git",
